@@ -46,17 +46,16 @@ const MoversChart: React.FC<MoversChartProps> = ({ data }) => {
                          scales: {
                             x: {
                                 beginAtZero: true,
-                                grid: { color: '#e2e8f0' },
+                                grid: { color: '#334155' },
                                 ticks: { 
-                                    color: '#475569',
+                                    color: '#94a3b8',
                                     callback: (value) => `${value}%`
                                 }
                             },
                             y: {
                                 grid: { display: false },
                                 ticks: { 
-                                    color: '#0f172a',
-                                    // FIX: Changed font weight from string '600' to number 600 to match Chart.js type definitions.
+                                    color: '#e2e8f0',
                                     font: { weight: 600 }
                                 }
                             }
@@ -64,9 +63,9 @@ const MoversChart: React.FC<MoversChartProps> = ({ data }) => {
                         plugins: {
                             legend: { display: false },
                             tooltip: {
-                                backgroundColor: '#0f172a',
-                                titleColor: '#ffffff',
-                                bodyColor: '#ffffff',
+                                backgroundColor: '#020617',
+                                titleColor: '#f8fafc',
+                                bodyColor: '#f8fafc',
                                 callbacks: {
                                     label: (context) => `${context.dataset.label || ''}: ${context.parsed.x.toFixed(2)}%`
                                 }
