@@ -1,0 +1,5 @@
+{
+  "name": "Interactive Market Report",
+  "description": "An interactive web application that displays a detailed market closing report with multiple tabs for overview, top stories, market details, and data analysis with charts.",
+  "requestFramePermissions": []
+}
