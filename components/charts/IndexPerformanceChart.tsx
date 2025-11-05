@@ -1,31 +1,36 @@
-
 import React, { useEffect, useRef } from 'react';
 import { Chart, BarController, CategoryScale, LinearScale, BarElement, Tooltip } from 'chart.js';
+import { IndexData } from '../../types';
 
 Chart.register(BarController, CategoryScale, LinearScale, BarElement, Tooltip);
 
-const IndexPerformanceChart: React.FC = () => {
+interface IndexPerformanceChartProps {
+    data: IndexData[];
+}
+
+const IndexPerformanceChart: React.FC<IndexPerformanceChartProps> = ({ data }) => {
     const chartRef = useRef<HTMLCanvasElement>(null);
     const chartInstanceRef = useRef<Chart | null>(null);
 
     useEffect(() => {
-        if (chartRef.current) {
+        if (chartRef.current && data.length > 0) {
             const ctx = chartRef.current.getContext('2d');
             if (ctx) {
-                // Destroy previous chart instance if it exists
                 if (chartInstanceRef.current) {
                     chartInstanceRef.current.destroy();
                 }
 
+                const sortedData = [...data].sort((a, b) => parseFloat(a.percentChange) - parseFloat(b.percentChange));
+
                 chartInstanceRef.current = new Chart(ctx, {
                     type: 'bar',
                     data: {
-                        labels: ['Nasdaq', 'Russell 2000', 'S&P 500', 'Dow Jones'],
+                        labels: sortedData.map(d => d.name),
                         datasets: [{
                             label: '% Change',
-                            data: [-2.04, -1.80, -1.17, -0.53],
-                            backgroundColor: ['#ef4444', '#f87171', '#fb923c', '#fca5a5'],
-                            borderColor: ['#dc2626', '#e11d48', '#f97316', '#ef4444'],
+                            data: sortedData.map(d => parseFloat(d.percentChange)),
+                            backgroundColor: sortedData.map(d => d.isPositive ? '#10b981' : '#f43f5e'),
+                            borderColor: sortedData.map(d => d.isPositive ? '#059669' : '#e11d48'),
                             borderWidth: 1,
                             barPercentage: 0.7,
                             categoryPercentage: 0.8
@@ -38,24 +43,25 @@ const IndexPerformanceChart: React.FC = () => {
                         scales: {
                             x: {
                                 beginAtZero: false,
-                                grid: { color: '#e5e7eb' },
+                                grid: { color: '#e2e8f0' },
                                 ticks: { 
-                                    color: '#4b5563',
+                                    color: '#475569',
                                     callback: (value) => `${value}%`
                                 }
                             },
                             y: {
                                 grid: { display: false },
                                 ticks: { 
-                                    color: '#1f2937',
-                                    font: { weight: '600' }
+                                    color: '#0f172a',
+                                    // FIX: Changed font weight from string '600' to number 600 to match Chart.js type definitions.
+                                    font: { weight: 600 }
                                 }
                             }
                         },
                         plugins: {
                             legend: { display: false },
                             tooltip: {
-                                backgroundColor: '#1f2937',
+                                backgroundColor: '#0f172a',
                                 titleColor: '#ffffff',
                                 bodyColor: '#ffffff',
                                 callbacks: {
@@ -68,14 +74,13 @@ const IndexPerformanceChart: React.FC = () => {
             }
         }
 
-        // Cleanup function to destroy chart instance on component unmount
         return () => {
             if (chartInstanceRef.current) {
                 chartInstanceRef.current.destroy();
                 chartInstanceRef.current = null;
             }
         };
-    }, []);
+    }, [data]);
 
     return <canvas ref={chartRef}></canvas>;
 };

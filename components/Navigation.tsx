@@ -16,15 +16,15 @@ const TABS: { id: Tab; label: string }[] = [
 
 const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab }) => {
     return (
-        <nav className="flex border-b border-gray-300 mb-8">
+        <nav className="flex border-b border-slate-300 mb-8">
             {TABS.map((tab) => (
                 <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`transition-all duration-300 ease-in-out text-gray-500 py-3 px-4 md:px-6 border-b-2 ${
+                    className={`transition-all duration-300 ease-in-out text-slate-500 py-3 px-4 md:px-6 border-b-2 ${
                         activeTab === tab.id
-                            ? 'border-blue-500 text-blue-500 font-semibold'
-                            : 'border-transparent hover:border-gray-400'
+                            ? 'border-sky-600 text-sky-600 font-semibold'
+                            : 'border-transparent hover:border-slate-400'
                     }`}
                 >
                     {tab.label}

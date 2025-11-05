@@ -1,4 +1,3 @@
-
 export type Tab = 'overview' | 'stories' | 'details' | 'analysis';
 
 export interface IndexData {
@@ -45,4 +44,38 @@ export interface Asset {
     change: string;
     isPositive: boolean;
     description: string;
+}
+
+export interface MarketReport {
+    reportDate: string;
+    indices: IndexData[];
+    overview: {
+        summary: string;
+        marketBalance: string;
+        sentiment: string;
+        analystNote: string;
+        conclusion: string;
+        lookAhead: string;
+    };
+    stories: {
+        topStories: Story[];
+        standoutStock: {
+            ticker: string;
+            percentChange: number;
+            reason: string;
+        };
+    };
+    details: {
+        winners: Mover[];
+        losers: Mover[];
+        upgrades: RatingChange[];
+        downgrades: RatingChange[];
+        assets: Asset[];
+    };
+    analysis: {
+        tradingPsychology: {
+            title: string;
+            lesson: string;
+        };
+    };
 }

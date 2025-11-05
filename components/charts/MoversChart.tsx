@@ -1,36 +1,39 @@
-
 import React, { useEffect, useRef } from 'react';
 import { Chart, BarController, CategoryScale, LinearScale, BarElement, Tooltip } from 'chart.js';
+import { Mover } from '../../types';
 
 Chart.register(BarController, CategoryScale, LinearScale, BarElement, Tooltip);
 
-const MoversChart: React.FC = () => {
+interface MoversChartProps {
+    data: {
+        winners: Mover[];
+        losers: Mover[];
+    };
+}
+
+const MoversChart: React.FC<MoversChartProps> = ({ data }) => {
     const chartRef = useRef<HTMLCanvasElement>(null);
     const chartInstanceRef = useRef<Chart | null>(null);
 
     useEffect(() => {
-        if (chartRef.current) {
+        if (chartRef.current && (data.winners.length > 0 || data.losers.length > 0)) {
             const ctx = chartRef.current.getContext('2d');
             if (ctx) {
                 if (chartInstanceRef.current) {
                     chartInstanceRef.current.destroy();
                 }
 
+                const sortedData = [...data.winners, ...data.losers].sort((a,b) => a.percentChange - b.percentChange);
+
                 chartInstanceRef.current = new Chart(ctx, {
                     type: 'bar',
                     data: {
-                        labels: ['SLDP', 'LMND', 'RIVN', 'PINS', 'SLNO', 'TREX'],
+                        labels: sortedData.map(d => d.ticker),
                         datasets: [{
                             label: '% Change',
-                            data: [52.00, 33.52, 25.39, -22.41, -29.60, -30.51],
-                            backgroundColor: [
-                                '#22c55e', '#4ade80', '#86efac', 
-                                '#ef4444', '#dc2626', '#b91c1c'
-                            ],
-                            borderColor: [
-                                '#16a34a', '#16a34a', '#16a34a',
-                                '#991b1b', '#991b1b', '#991b1b'
-                            ],
+                            data: sortedData.map(d => d.percentChange),
+                            backgroundColor: sortedData.map(d => d.percentChange > 0 ? '#10b981' : '#f43f5e'),
+                            borderColor: sortedData.map(d => d.percentChange > 0 ? '#059669' : '#e11d48'),
                             borderWidth: 1,
                             barPercentage: 0.7,
                             categoryPercentage: 0.8
@@ -43,24 +46,25 @@ const MoversChart: React.FC = () => {
                          scales: {
                             x: {
                                 beginAtZero: true,
-                                grid: { color: '#e5e7eb' },
+                                grid: { color: '#e2e8f0' },
                                 ticks: { 
-                                    color: '#4b5563',
+                                    color: '#475569',
                                     callback: (value) => `${value}%`
                                 }
                             },
                             y: {
                                 grid: { display: false },
                                 ticks: { 
-                                    color: '#1f2937',
-                                    font: { weight: '600' }
+                                    color: '#0f172a',
+                                    // FIX: Changed font weight from string '600' to number 600 to match Chart.js type definitions.
+                                    font: { weight: 600 }
                                 }
                             }
                         },
                         plugins: {
                             legend: { display: false },
                             tooltip: {
-                                backgroundColor: '#1f2937',
+                                backgroundColor: '#0f172a',
                                 titleColor: '#ffffff',
                                 bodyColor: '#ffffff',
                                 callbacks: {
@@ -79,7 +83,7 @@ const MoversChart: React.FC = () => {
                 chartInstanceRef.current = null;
             }
         };
-    }, []);
+    }, [data]);
 
     return <canvas ref={chartRef}></canvas>;
 };
