@@ -184,10 +184,19 @@ const App: React.FC = () => {
                 throw new Error('GEMINI_API_KEY is not configured. Please set the environment variable.');
             }
 
+            // Get today's date in a readable format
+            const today = new Date();
+            const dateOptions: Intl.DateTimeFormatOptions = {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            };
+            const formattedDate = today.toLocaleDateString('en-US', dateOptions);
+
             const ai = new GoogleGenAI({ apiKey });
             const response = await ai.models.generateContent({
                 model: 'gemini-2.5-flash',
-                contents: "Generate a detailed, realistic, and insightful market closing report for today. The report should be comprehensive, covering all aspects of the market's performance. Follow the provided JSON schema precisely.",
+                contents: `Generate a detailed, realistic, and insightful market closing report for ${formattedDate}. The report should be comprehensive, covering all aspects of the market's performance. Follow the provided JSON schema precisely. Make sure the reportDate field reflects ${formattedDate}.`,
                 config: {
                     responseMimeType: "application/json",
                     responseSchema: reportSchema,
