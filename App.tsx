@@ -178,10 +178,25 @@ const App: React.FC = () => {
         setIsLoading(true);
         setError(null);
         try {
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+            const apiKey = process.env.API_KEY;
+
+            if (!apiKey || apiKey === '') {
+                throw new Error('GEMINI_API_KEY is not configured. Please set the environment variable.');
+            }
+
+            // Get today's date in a readable format
+            const today = new Date();
+            const dateOptions: Intl.DateTimeFormatOptions = {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            };
+            const formattedDate = today.toLocaleDateString('en-US', dateOptions);
+
+            const ai = new GoogleGenAI({ apiKey });
             const response = await ai.models.generateContent({
                 model: 'gemini-2.5-flash',
-                contents: "Generate a detailed, realistic, and insightful market closing report for today. The report should be comprehensive, covering all aspects of the market's performance. Follow the provided JSON schema precisely.",
+                contents: `Generate a detailed, realistic, and insightful market closing report for ${formattedDate}. The report should be comprehensive, covering all aspects of the market's performance. Follow the provided JSON schema precisely. Make sure the reportDate field reflects ${formattedDate}.`,
                 config: {
                     responseMimeType: "application/json",
                     responseSchema: reportSchema,
@@ -191,7 +206,8 @@ const App: React.FC = () => {
             setReportData(report);
         } catch (err) {
             console.error(err);
-            setError("Failed to generate the market report. Please try again.");
+            const errorMessage = err instanceof Error ? err.message : "Failed to generate the market report. Please try again.";
+            setError(errorMessage);
         } finally {
             setIsLoading(false);
         }
